@@ -1,0 +1,27 @@
+.ipalimg {
+  border-radius: 15px;
+}
+
+.gambarIPAL {
+  position: relative;
+  margin: auto;
+  padding: 10px;
+  text-align: center;
+}
+.tulisan {
+  background: none;
+}
+
+.konten2 {
+  text-decoration: none;
+  text-align: justify;
+  padding-left: 10%;
+  padding-right: 10%;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+@media (max-width: 500px) {
+  .slides {
+    width: 300px;
+  }
+}

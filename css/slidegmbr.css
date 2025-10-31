@@ -1,0 +1,72 @@
+.slider {
+width: 600px;
+margin: 1% auto;
+max-width: 95vw;
+aspect-ratio: 16/7;
+position: relative;
+overflow: hidden;
+border-radius: 12px;
+box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.slides {
+
+display: flex;
+width: 600%;
+height: 100%;
+animation: slide 15s infinite;
+}
+
+.slides img {
+width: 20%;
+height: 100%;
+object-fit: cover;
+}
+
+/* Animasi geser */
+@keyframes slide {
+0%   { transform: translateX(0%); }
+20%  { transform: translateX(0%); }
+25%  { transform: translateX(-20%); }
+45%  { transform: translateX(-20%); }
+50%  { transform: translateX(-40%); }
+70%  { transform: translateX(-40%); }
+75%  { transform: translateX(-60%); }
+95%  { transform: translateX(-60%); }
+100% { transform: translateX(0%); }
+}
+
+/* Titik indikator */
+.dots {
+position: absolute;
+bottom: 12px;
+left: 50%;
+transform: translateX(-50%);
+display: flex;
+gap: 8px;
+}
+
+.dots div {
+width: 12px;
+height: 12px;
+border-radius: 50%;
+background: rgba(255,255,255,0.5);
+border: 2px solid rgba(0,0,0,0.2);
+}
+
+/* Efek visual tambahan */
+.slider::after {
+content: "";
+position: absolute;
+inset: 0;
+box-shadow: inset 0 -60px 80px -20px rgba(0,0,0,0.5);
+pointer-events: none;
+}
+
+@media (max-width:500px){
+
+.slider { border-radius: 8px;
+width: 400px; 
+}
+.dots div { width:10px; height:10px; }
+}

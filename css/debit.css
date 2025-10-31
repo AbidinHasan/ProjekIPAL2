@@ -1,0 +1,78 @@
+.table-responsive {
+  max-height: 400px; /* tinggi area scroll */
+  overflow-y: auto; /* aktifkan scroll vertikal */
+}
+th {
+  position: sticky;
+  top: 0;
+  color: white;
+  z-index: 100;
+}
+h1 {
+  margin-bottom: 30px;
+  color: rgb(108, 185, 201);
+  font-size: 50px;
+  text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.728);
+  text-align: center;
+}
+/* Overlay latar belakang */
+#loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 10, 10, 0.605);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 900;
+}
+
+/* Kontainer logo + teks */
+.logo-container {
+  text-align: center;
+  color: white;
+}
+
+/* Logo dengan animasi */
+.loading-logo {
+  width: 120px;
+  height: 120px;
+  animation: pulse 2s infinite ease-in-out;
+  filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.6));
+}
+
+/* Animasi berdenyut */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+}
+
+/* Teks di bawah logo */
+.loading-text {
+  margin-top: 1rem;
+  font-weight: 500;
+  color: #ffffff;
+  letter-spacing: 1px;
+}
+#diagram {
+  padding: 6px;
+  border-radius: 5px;
+  background-color: rgb(169, 180, 189);
+  border: thin;
+}
+#diagram:hover {
+  background-color: rgb(42, 60, 60);
+}

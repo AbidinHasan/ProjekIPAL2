@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Debit STP arsip 2025</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="shortcut icon"
+      href="https://ik.imagekit.io/galleryBiden/foto/hydro-power.png?updatedAt=1760495537409"
+      type="image/x-icon"
+    />
+    <link rel="stylesheet" href="cssForArsip/navbar.css" />
+    <link rel="stylesheet" href="cssForArsip/debit.css" />
+    <link rel="stylesheet" href="cssForArsip/buttom.css" />
+  </head>
+  <body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay">
+      <div class="logo-container">
+        <img
+          src="https://cdn-icons-png.flaticon.com/128/8999/8999474.png"
+          alt="Logo"
+          class="loading-logo"
+        />
+        <h4 class="loading-text">Sabar bos</h4>
+      </div>
+    </div>
+    <script src="jsForArsip/navbar-btn.js"></script>
+    <div class="spasi"></div>
+
+    <div class="container">
+      <h1>Debit STP 2025</h1>
+
+      <!-- Dropdown filter bulan -->
+      <div class="mb-3 text-left">
+        <label for="bulanFilter" class="form-label fw-bold">Bulan:</label>
+        <select
+          id="bulanFilter"
+          class="form-select w-auto d-inline-block"
+          onchange="filterBulan()"
+        >
+          <option value="">All</option>
+          <option value="01">Januari</option>
+          <option value="02">Februari</option>
+          <option value="03">Maret</option>
+          <option value="04">April</option>
+          <option value="05">Mei</option>
+          <option value="06">Juni</option>
+          <option value="07">Juli</option>
+          <option value="08">Agustus</option>
+          <option value="09">September</option>
+          <option value="10">Oktober</option>
+          <option value="11">November</option>
+          <option value="12">Desember</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <button class="btn btn-success" onclick="exportExcel()">
+          Export ke Excel
+        </button>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped" id="dataTable">
+          <thead class="table-dark">
+            <tr id="tableHead" class="text-center">
+              <th>Memuat</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody" class="text-center">
+            <tr>
+              <td>Data</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!--JS-->
+
+    <script src="jsForArsip/link.js"></script>
+    <script>
+      const GAS_URL =
+        "https://script.google.com/macros/s/AKfycbxSHh6XNf_ge-v6SHbyfFwnBBOH3J6u448m8E30yKNtjqRJv-VFUNuSE0jZKQGiLkXj/exec";
+      let allData = []; // data asli dari GAS
+
+      // Hilangkan spinner setelah data tampil
+      function hideLoading() {
+        const overlay = document.getElementById("loadingOverlay");
+        if (overlay) overlay.style.display = "none";
+      }
+
+      // ----- helper: ambil bulan dari berbagai format tanggal -----
+      function parseMonthFromCell(val) {
+        if (!val) return null;
+
+        const s = String(val).trim();
+        if (s === "") return null;
+
+        // --- cek angka murni (serial / epoch) ---
+        if (!isNaN(s) && s.length > 4) {
+          const d = new Date(Number(s));
+          if (!isNaN(d)) return String(d.getMonth() + 1).padStart(2, "0");
+        }
+
+        // --- mapping nama bulan ---
+        const bulanMap = {
+          januari: "01",
+          februari: "02",
+          maret: "03",
+          april: "04",
+          mei: "05",
+          juni: "06",
+          juli: "07",
+          agustus: "08",
+          september: "09",
+          oktober: "10",
+          november: "11",
+          desember: "12",
+        };
+
+        // cek apakah mengandung nama bulan
+        const lower = s.toLowerCase();
+        for (const [nama, kode] of Object.entries(bulanMap)) {
+          if (lower.includes(nama)) {
+            return kode;
+          }
+        }
+
+        // --- format numerik umum: D/M/YY atau YYYY-MM-DD ---
+        const regex1 = /^\d{1,2}[-/]\d{1,2}[-/]\d{2,4}$/;
+        const regex2 = /^\d{4}[-/]\d{1,2}[-/]\d{1,2}$/;
+
+        if (regex1.test(s) || regex2.test(s)) {
+          const p = s.split(/[-/]/);
+          if (p.length >= 2) {
+            return String(parseInt(p[1], 10)).padStart(2, "0");
+          }
+        }
+
+        // --- fallback: Date() parser internasional ---
+        const d = new Date(s);
+        if (!isNaN(d)) return String(d.getMonth() + 1).padStart(2, "0");
+
+        return null;
+      }
+
+      // ----- render tabel; aman bila data kosong -----
+      function renderTable(dataArr) {
+        const headRow = document.getElementById("tableHead");
+        const bodyTable = document.getElementById("tableBody");
+
+        if (!dataArr || dataArr.length === 0) {
+          const headers =
+            allData && allData.length ? Object.keys(allData[0]) : ["Info"];
+          headRow.innerHTML = headers.map((h) => `<th>${h}</th>`).join("");
+          bodyTable.innerHTML = `<tr><td colspan="${headers.length}">Gak ada ya</td></tr>`;
+          return;
+          hideLoading();
+        }
+
+        const headers = Object.keys(dataArr[0]);
+        headRow.innerHTML = headers.map((h) => `<th>${h}</th>`).join("");
+        bodyTable.innerHTML = dataArr
+          .map(
+            (row) =>
+              `<tr>${headers
+                .map((h) => `<td>${row[h] ?? ""}</td>`)
+                .join("")}</tr>`
+          )
+          .join("");
+        hideLoading();
+      }
+
+      // ----- fungsi filter bulan (menggunakan parser di atas) -----
+      function filterBulan() {
+        const selected = document.getElementById("bulanFilter").value;
+        const selectedTwo = String(selected).padStart(2, "0");
+
+        // debug singkat (bisa dihapus nanti)
+        // console.log("Selected month:", selectedTwo);
+
+        // selalu filter dari data penuh
+        const source = [...allData];
+
+        if (!selected) {
+          renderTable(source);
+          return;
+        }
+
+        const filtered = source.filter((item) => {
+          const bulan = parseMonthFromCell(item.Tanggal);
+          // console.log(item.Tanggal, "->", bulan); // aktifkan untuk debugging baris per baris
+          return bulan === selectedTwo;
+        });
+
+        renderTable(filtered);
+      }
+
+      // ----- callback JSONP dari GAS -----
+      function tampilkanData(data) {
+        if (!data || !data.hasil) {
+          document.getElementById("tableHead").innerHTML =
+            "<th>Tidak ada data</th>";
+          document.getElementById("tableBody").innerHTML =
+            "<tr><td>Kosong</td></tr>";
+          return;
+        }
+
+        allData = data.hasil;
+        // Pastikan tabel awal dibuat (pakai header dari data asli)
+        renderTable(allData);
+
+        // optional: tunjukkan contoh format tanggal di console (untuk debug)
+        if (allData.length) {
+          console.log(
+            "Contoh Tanggal (3 pertama):",
+            allData.slice(0, 3).map((r) => ({
+              raw: r.Tanggal,
+              parsed: parseMonthFromCell(r.Tanggal),
+            }))
+          );
+        }
+      }
+
+      // panggil GAS via JSONP
+      const script = document.createElement("script");
+      script.src = GAS_URL + "?callback=tampilkanData";
+      document.body.appendChild(script);
+
+      function exportExcel() {
+        const selected = document.getElementById("bulanFilter").value;
+        // prettier-ignore
+        const bulanNama = {
+          "01": "Januari",
+          "02": "Februari",
+          "03": "Maret",
+          "04": "April",
+          "05": "Mei",
+          "06": "Juni",
+          "07": "Juli",
+          "08": "Agustus",
+          "09": "September",
+          "10": "Oktober",
+          "11": "September",
+          "12": "Desember",
+        };
+
+        // Tentukan nama bulan untuk file
+        const namaBulan = selected ? bulanNama[selected] : "All";
+
+        // Tentukan data yang akan diekspor
+        let dataToExport = allData;
+        if (selected) {
+          const selectedTwo = String(selected).padStart(2, "0");
+          dataToExport = allData.filter(
+            (item) => parseMonthFromCell(item.Tanggal) === selectedTwo
+          );
+        }
+
+        if (!dataToExport.length) {
+          alert("Tidak ada data untuk diekspor!");
+          return;
+        }
+
+        // Buat sheet dan workbook
+        const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Data Debit STP");
+
+        // Buat nama file berdasarkan bulan
+        const namaFile = `Debit_STP_${namaBulan}.xlsx`;
+        XLSX.writeFile(workbook, namaFile);
+      }
+    </script>
+    <!--Buttom-->
+    <div class="spasi-bwh"></div>
+    <nav class="bawah">
+      <ul class="isi-bwh">
+        <li class="logo">
+          <p>Created by:</p>
+          <img
+            src="https://ik.imagekit.io/galleryBiden/foto/LOGO%20ABDN%20white.png?updatedAt=1761290886771"
+            width="90px"
+            alt="ABDN"
+          /><br />
+          <p>©2025</p>
+        </li>
+        <li class="bmj">
+          <img
+            src="https://ik.imagekit.io/galleryBiden/foto/BMJ_logo-mini.png?updatedAt=1761278384754"
+          />
+        </li>
+      </ul>
+    </nav>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!--End JS-->
+  </body>
+</html>

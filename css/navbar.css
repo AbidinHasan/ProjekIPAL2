@@ -1,0 +1,104 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  padding: 0;
+  color: white;
+  font-family: Arial, sans-serif;
+  background: oklch(26.112% 0.00372 286.029);
+}
+.spasi {
+  padding: 30px;
+}
+.kon1 {
+  position: fixed; /* Navbar tetap di posisi atas */
+  top: 0;
+  left: 0;
+  width: 100%;
+  color: white;
+  z-index: 1000;
+}
+
+/* Navbar list */
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background-color: #192b32;
+  display: flex;
+  align-items: center;
+  color: white;
+}
+
+ul li {
+  position: relative;
+}
+
+/* tombol navbar */
+ul li a,
+.dropdown-btn {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: unset;
+}
+.dropdown {
+  position: absolute;
+  right: 0;
+  cursor: unset;
+}
+
+ul li a:hover,
+.dropdown-btn:hover {
+  background-color: #325969;
+}
+
+/* Dropdown container */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background-color: #325969;
+  min-width: 220px;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  padding: 8px 0;
+  z-index: 1000;
+  border-radius: 4px;
+}
+
+/* item di dalam dropdown */
+.dropdown-content a {
+  display: block;
+  padding: 10px 16px;
+  color: white;
+  text-decoration: none;
+  text-align: left;
+  font-size: 13px;
+  transition: background 0.2s;
+  cursor: unset;
+}
+
+.dropdown-content a:hover {
+  background: #a85151;
+}
+
+ul li:hover > .dropdown-content {
+  display: block;
+}
+
+.dropdown.open > .dropdown-content {
+  display: block;
+}
+
+#Home {
+  font-size: 100%;
+}

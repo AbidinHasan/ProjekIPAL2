@@ -1,0 +1,25 @@
+table {
+  margin: auto;
+}
+h1 {
+  margin-bottom: 30px;
+  color: rgb(108, 185, 201);
+  font-size: 2em;
+  text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.3);
+  text-align: center;
+}
+td {
+  padding: 17px;
+}
+.tabel {
+  border: thin;
+  text-decoration: none;
+  color: black;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: aquamarine;
+}
+
+.tabel:hover {
+  background: white;
+}

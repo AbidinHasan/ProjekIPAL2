@@ -1,0 +1,22 @@
+.spasi-bwh {
+  min-height: 60vh;
+}
+.bawah {
+  padding: 5px;
+  background-color: #192b32;
+}
+.isi-bwh {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+}
+.logo {
+  left: 1%;
+}
+.bmj {
+  position: absolute;
+  right: 1%;
+}
